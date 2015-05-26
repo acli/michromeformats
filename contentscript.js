@@ -1,10 +1,26 @@
+/* vi:set sw=2 ai sm: */
 function discoverMicroformats() {
-  var hcards      = ufShiv.get('hCard', document.body)['microformats']['vcard'];
-  var hcalendars  = ufShiv.get('hCalendar', document.body)['microformats']['vevent'];
-  var hreviews    = ufShiv.get('hReview', document.body)['microformats']['hreview'];
+  var hcards      = [];
+  var hcalendars  = [];
+  var hreviews    = [];
+  var hrecipes    = [];
+  var geos        = [];
+  console.log(microformats.getItems());
+  microformats.getItems().items.forEach(function(a) {
+    if (a.type == 'h-card') {
+      hcards.push(a.properties);
+    } else if (a.type == 'h-event') {
+      hcalendars.push(a.properties);
+    } else if (a.type == 'h-review') {
+      hreviews.push(a.properties);
+    } else if (a.type == 'h-recipe') {
+      hrecipes.push(a.properties);
+    } else if (a.type == 'h-geo') {
+      hgeos.push(a.properties);
+    }
+  });
   var hreviewaggs = HReviewAggregate.discover();
-  var hrecipes    = HRecipe.discover();
-  var geos        = ufShiv.get('geo', document.body)['microformats']['geo'];
+  //var hrecipes    = HRecipe.discover();
 
   // convert objects into JSON so we can
   // pass the arrays to the background page

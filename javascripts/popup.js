@@ -1,3 +1,4 @@
+/* vi: set sw=2 ai sm: */
 var bgPage = chrome.extension.getBackgroundPage();
 
 // Set the body class to the user status (loggedin or loggedout)
@@ -131,10 +132,10 @@ chrome.tabs.getSelected(null, function(tab) {
     var hcalHtml = $('<li class="hcalendar" id="hcal-'+j+'">'
                      + '<div class="details">'
                        + '<h1>'
-                         + hcalendar.summary
+                         + hcalendar.name
                        + '</h1>'
                        + '<ul>'
-                         + '<li class="start">'+ $.fn.strftime($.fn.parseISO(hcalendar.dtstart), '%b %d, %Y at %i:%M%P') +'</li>'
+                         + '<li class="start">'+ $.fn.strftime($.fn.parseISO(hcalendar.start[0]), '%b %d, %Y at %i:%M%P') +'</li>'
                        + '</ul>'
                        + '<div class="download">'
                          + '<a href="#" class="submitvevent" title="Add to Google Contacts">'
@@ -143,7 +144,7 @@ chrome.tabs.getSelected(null, function(tab) {
                          + '<a href="http://microformat-conversion.herokuapp.com/vevent?query='+ encodeURIComponent(JSON.stringify(hcalendar)) + '" title="Download to your computer" target="_blank" class="vevent">'
                            + '<span class="webfont">~</span>'
                          + '</a>'
-                       + '</div'
+                       + '</div>'
                      + '</div>'
                    + '</li>');
 
@@ -161,19 +162,24 @@ chrome.tabs.getSelected(null, function(tab) {
       return false;
     });
 
-    if (hcalendar.dtend)
-      $('#hcal-'+j+' ul .start').append(' — '+ $.fn.strftime($.fn.parseISO(hcalendar.dtend), '%b %d, %Y at %i:%M%P'));
+    if (hcalendar.end)
+      $('#hcal-'+j+' ul .start').append(' — '+ $.fn.strftime($.fn.parseISO(hcalendar.end[0]), '%b %d, %Y at %i:%M%P'));
 
     if (hcalendar.location) {
-      var location = hcalendar.location.adr[0];
-      var street = location["street-address"][0] ? location["street-address"][0] : '';
-      var locality = location.locality ? location.locality : '';
-      var region = location.region ? location.region : '';
-      var country = location["country-name"] ? location["country-name"] : '';
-      var postalCode = location["postal-code"] ? location["postal-code"] : '';
-      var mapString = [street, locality, region, country, postalCode];
+      var location = hcalendar.location[0];
+      //var street = location["street-address"][0] ? location["street-address"][0] : '';
+      //var locality = location.locality ? location.locality : '';
+      //var region = location.region ? location.region : '';
+      //var country = location["country-name"] ? location["country-name"] : '';
+      //var postalCode = location["postal-code"] ? location["postal-code"] : '';
+      //var mapString = [street, locality, region, country, postalCode];
+      var mapString;
 
-      $('#hcal-'+j+' ul').append('<li><a href="http://maps.google.com/maps?q='+encodeURIComponent(mapString)+'" target="_blank" title="View on Google Maps">'+hcalendar.location.fn+'</a></li>');
+      var venue = location;
+      if (mapString) {
+	venue = '<a href="http://maps.google.com/maps?q='+encodeURIComponent(mapString)+'" target="_blank" title="View on Google Maps">'+venue+'</a>';
+      }
+      $('#hcal-'+j+' ul').append('<li>' + venue + '</li>');
     }
   });
 
